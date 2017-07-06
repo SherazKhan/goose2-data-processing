@@ -1,0 +1,6 @@
+import os
+import sys
+
+var = dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, var)
+print(var)
