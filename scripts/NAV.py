@@ -5,6 +5,7 @@ import SVR as SVR
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 
 ## All functions take inputs in the following format:
 #    [{"time":1009,"sensor":"gyro","data":[-1.54875,12.19750,11.36625]},
@@ -50,7 +51,8 @@ def calcLinearVelocityAlt(ACCELArray):
         returnArray["zVelocity"] = zVel
         plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
         plt.show()
-        return returnArray
+        print(returnArray)
+        sys.stdout.flush()
 
 def calcLinearDisplacementAlt(ACCELArray):
     DataType = ACCELArray[0]["sensor"]
@@ -83,7 +85,8 @@ def calcLinearDisplacementAlt(ACCELArray):
         returnArray["zDisplacement"] = zDisp
         plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
         plt.show()
-        return returnArray
+        print(returnArray)
+        sys.stdout.flush()
 
 def outputRowPitchYaw(GYROArray):
     DataType = GYROArray[0]["sensor"]
@@ -105,7 +108,8 @@ def outputRowPitchYaw(GYROArray):
         returnArray["row"] = row
         returnArray["pitch"] = pitch
         returnArray["yaw"] = yaw
-        return returnArray
+        print(returnArray)
+        sys.stdout.flush()
 
 def calcAngularVelocity(ACCELArray, GYROArray):
     ## 3 feet tall, 2 feet wide (approximately)
@@ -145,7 +149,8 @@ def calcAngularVelocity(ACCELArray, GYROArray):
     returnArray["xAngular"] = xAng
     returnArray["yAngular"] = yAng
     returnArray["zAngular"] = zAng
-    return returnArray
+    print(returnArray)
+    sys.stdout.flush()
 
 
 def Optical(OptJSON):
@@ -173,15 +178,16 @@ def Optical(OptJSON):
     returnArray["time"] = time
     returnArray["displacement"] = displacement
     returnArray["velocity"] = velocity
-    print("Displacement array is")
-    print(displacementCumulative)
-    print("Velocity array is")
-    print(velocity)
-    print("Time array is")
-    print(timeCumulative)
+    # print("Displacement array is")
+    # print(displacementCumulative)
+    # print("Velocity array is")
+    # print(velocity)
+    # print("Time array is")
+    # print(timeCumulative)
     plt.plot(timeCumulative, displacementCumulative, 'r', timeCumulative, displacement, 'b')
     plt.show()
-    return returnArray
+    print(returnArray)
+    sys.stdout.flush()
 
 def calcLinearVelocity(ACCELArray):
     DataType = ACCELArray[0]["sensor"]
