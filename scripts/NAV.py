@@ -48,6 +48,41 @@ def calcLinearVelocityAlt(ACCELArray):
         returnArray["xVelocity"] = xVel
         returnArray["yVelocity"] = yVel
         returnArray["zVelocity"] = zVel
+        plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
+        plt.show()
+        return returnArray
+
+def calcLinearDisplacementAlt(ACCELArray):
+    DataType = ACCELArray[0]["sensor"]
+    returnArray = {}
+    if DataType != "accelerometer":
+        return "Accelerometer readings required"
+    else:
+        velocity = calcLinearVelocityAlt(ACCELArray)
+        size = len(ACCELArray)
+        xVel = velocity["xVelocity"]
+        yVel = velocity["yVelocity"]
+        zVel = velocity["zVelocity"]
+        time = velocity["time"]
+        xDisp = []
+        yDisp = []
+        zDisp = []
+
+        xDisp.append(0)
+        yDisp.append(0)
+        zDisp.append(0)
+        count = 1
+        while count < size:
+            xDisp.append((float)((xVel[count]-xVel[count-1])*(time[count] - time[count-1])))
+            yDisp.append((float)((yVel[count]-yVel[count-1])*(time[count] - time[count-1])))
+            zDisp.append((float)((zVel[count]-zVel[count-1])*(time[count] - time[count-1])))
+            count += 1
+        returnArray["time"] = time
+        returnArray["xDisplacement"] = xDisp
+        returnArray["yDisplacement"] = yDisp
+        returnArray["zDisplacement"] = zDisp
+        plt.plot(time, xDisp, 'r', time, yDisp, 'b', time, zDisp, 'g')
+        plt.show()
         return returnArray
 
 def outputRowPitchYaw(GYROArray):
@@ -213,13 +248,13 @@ def calcLinearDisplacement(ACCELArray):
 # for i in range(50):
 #     i += 1
 #     DemoData.append({"time": i, "sensor": "accelerometer", "data": [np.random.uniform(0, i), np.random.chisquare(i), np.random.binomial(50, (float)(i/(i+1)))]})
-# #
+
 # # DemoData2 = []
 # # for i in range(50):
 # #     i += 1
 # #     DemoData.append({"time": i, "sensor": "gyro", "data": [np.random.uniform(0, i), np.random.chisquare(i), np.random.binomial(50, (float)(i/(i+1)))]})
 # #
 #
-# calcLinearDisplacement(SVR.SVR_process_monotype(DemoData))
+# calcLinearVelocityAlt(SVR.SVR_process_monotype(DemoData))
 
 # calcAngularVelocity(SVR.SVR_process_monotype(DemoData), SVR.SVR_process_monotype(DemoData2))
