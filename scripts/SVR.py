@@ -7,7 +7,7 @@
 import numpy as np
 from sklearn.svm import SVR
 import timeit
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sys
 
 start = timeit.default_timer()
@@ -40,8 +40,8 @@ def SVR_process_monotype(JSONArray):
         count += 1
 
     # red for x, blue for y and green for z
-    plt.plot(t, x_rbf, 'r', t, y_rbf, 'b', t, z_rbf, 'g', t, x, 'r--', t, y, 'bs', t, z, 'g^', lw = 2)
-    plt.show()
+    # plt.plot(t, x_rbf, 'r', t, y_rbf, 'b', t, z_rbf, 'g', t, x, 'r--', t, y, 'bs', t, z, 'g^', lw = 2)
+    # plt.show()
     print(returnJSONArray)
     sys.stdout.flush()
 

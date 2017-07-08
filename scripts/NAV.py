@@ -4,7 +4,7 @@
 import SVR as SVR
 import math
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import sys
 
 ## All functions take inputs in the following format:
@@ -49,8 +49,8 @@ def calcLinearVelocityAlt(ACCELArray):
         returnArray["xVelocity"] = xVel
         returnArray["yVelocity"] = yVel
         returnArray["zVelocity"] = zVel
-        plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
-        plt.show()
+        # plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
+        # plt.show()
         print(returnArray)
         sys.stdout.flush()
 
@@ -83,8 +83,8 @@ def calcLinearDisplacementAlt(ACCELArray):
         returnArray["xDisplacement"] = xDisp
         returnArray["yDisplacement"] = yDisp
         returnArray["zDisplacement"] = zDisp
-        plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
-        plt.show()
+        # plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
+        # plt.show()
         print(returnArray)
         sys.stdout.flush()
 
@@ -175,7 +175,7 @@ def Optical(OptJSON):
         velocity.append((displacement[count]-displacement[count-1])/(time[count]))
         count += 1
     returnArray = {}
-    returnArray["time"] = time
+    returnArray["time"] = timeCumulative
     returnArray["displacement"] = displacement
     returnArray["velocity"] = velocity
     # print("Displacement array is")
@@ -184,8 +184,8 @@ def Optical(OptJSON):
     # print(velocity)
     # print("Time array is")
     # print(timeCumulative)
-    plt.plot(timeCumulative, displacementCumulative, 'r', timeCumulative, displacement, 'b')
-    plt.show()
+    # plt.plot(timeCumulative, displacementCumulative, 'r', timeCumulative, displacement, 'b')
+    # plt.show()
     print(returnArray)
     sys.stdout.flush()
 
@@ -217,9 +217,9 @@ def calcLinearVelocity(ACCELArray):
             zVel.append(np.trapz(t[LowerBound:UpperBound], z[LowerBound:UpperBound]))
             LowerBound += 1
             UpperBound = LowerBound + 2
-        print(len(xVel))
-        plt.plot(t[2:], xVel, 'r', t[2:], yVel, 'b', t[2:], zVel, 'g', lw=2)
-        plt.show()
+        # print(len(xVel))
+        # plt.plot(t[2:], xVel, 'r', t[2:], yVel, 'b', t[2:], zVel, 'g', lw=2)
+        # plt.show()
 
         returnArray["time"] = t
         returnArray["xVelocity"] = xVel
@@ -253,8 +253,8 @@ def calcLinearDisplacement(ACCELArray):
         zDisp.append(np.trapz(times[LowerBound:UpperBound], zVel[LowerBound:UpperBound]))
         LowerBound += 1
         UpperBound = LowerBound + 2
-    plt.plot(times[4:], xDisp, 'r', times[4:], yDisp, 'b', times[4:], zDisp, 'g', lw=2)
-    plt.show()
+    # plt.plot(times[4:], xDisp, 'r', times[4:], yDisp, 'b', times[4:], zDisp, 'g', lw=2)
+    # plt.show()
 
     retval["xDisplacement"] = xDisp
     retval["yDisplacement"] = yDisp
