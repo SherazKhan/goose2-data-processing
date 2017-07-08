@@ -114,10 +114,25 @@ def calcAngularVelocity(ACCELArray, GYROArray):
 
 
 def Optical(OptJSON):
-    velocity = OptJSON["allData"]
-    
-    return
-
+    data = OptJSON["allData"]
+    time = []
+    displacement = []
+    velocity = []
+    time.append(data[0]["intTime"])
+    displacement.append(0)
+    velocity.append(0)
+    size = len(data)
+    count = 1
+    while count < size:
+        time.append(data[count]["intTime"])
+        displacement.append(displacement[count-1] + 30.58158984)
+        velocity.append((displacement[count]-displacement[count-1])/(time[count]-time[count-1]))
+        count += 1
+    returnArray = {}
+    returnArray["time"] = time
+    returnArray["displacement"] = displacement
+    returnArray["velocity"] = velocity
+    return returnArray
 
 def calcLinearVelocity(ACCELArray):
     DataType = ACCELArray[0]["sensor"]
