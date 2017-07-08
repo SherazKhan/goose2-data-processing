@@ -40,7 +40,7 @@ def calcLinearVelocityAlt(ACCELArray):
         zVel.append(0)
         count = 1
         while count < size:
-            xVel.append((float)((x[count]-x[count-1])*(t[count] - t[count-1])))
+            xVel.append((float)((x[count] - x[count - 1]) * (t[count] - t[count - 1])))
             yVel.append((float)((y[count] - y[count - 1]) * (t[count] - t[count - 1])))
             zVel.append((float)((z[count] - z[count - 1]) * (t[count] - t[count - 1])))
             count += 1
@@ -73,15 +73,15 @@ def calcLinearDisplacementAlt(ACCELArray):
         zDisp.append(0)
         count = 1
         while count < size:
-            xDisp.append((float)((xVel[count]-xVel[count-1])*(time[count] - time[count-1])))
-            yDisp.append((float)((yVel[count]-yVel[count-1])*(time[count] - time[count-1])))
-            zDisp.append((float)((zVel[count]-zVel[count-1])*(time[count] - time[count-1])))
+            xDisp.append((float)((xVel[count]-xVel[count-1])*(time[count] - time[count-1])) + xDisp[count-1])
+            yDisp.append((float)((yVel[count]-yVel[count-1])*(time[count] - time[count-1])) + yDisp[count-1])
+            zDisp.append((float)((zVel[count]-zVel[count-1])*(time[count] - time[count-1])) + zDisp[count-1])
             count += 1
         returnArray["time"] = time
         returnArray["xDisplacement"] = xDisp
         returnArray["yDisplacement"] = yDisp
         returnArray["zDisplacement"] = zDisp
-        plt.plot(time, xDisp, 'r', time, yDisp, 'b', time, zDisp, 'g')
+        plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
         plt.show()
         return returnArray
 
@@ -151,22 +151,36 @@ def calcAngularVelocity(ACCELArray, GYROArray):
 def Optical(OptJSON):
     data = OptJSON["allData"]
     time = []
+    timeCumulative = []
     displacement = []
+    displacementCumulative = []
     velocity = []
+    timeCumulative.append(0)
     time.append(data[0]["intTime"])
     displacement.append(0)
+    displacementCumulative.append(0)
     velocity.append(0)
     size = len(data)
     count = 1
     while count < size:
         time.append(data[count]["intTime"])
+        timeCumulative.append(time[count] + time[count-1])
         displacement.append(displacement[count-1] + 30.58158984)
-        velocity.append((displacement[count]-displacement[count-1])/(time[count]-time[count-1]))
+        displacementCumulative.append(displacement[count] + displacement[count-1])
+        velocity.append((displacement[count]-displacement[count-1])/(time[count]))
         count += 1
     returnArray = {}
     returnArray["time"] = time
     returnArray["displacement"] = displacement
     returnArray["velocity"] = velocity
+    print("Displacement array is")
+    print(displacementCumulative)
+    print("Velocity array is")
+    print(velocity)
+    print("Time array is")
+    print(timeCumulative)
+    plt.plot(timeCumulative, displacementCumulative, 'r', timeCumulative, displacement, 'b')
+    plt.show()
     return returnArray
 
 def calcLinearVelocity(ACCELArray):
