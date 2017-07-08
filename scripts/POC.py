@@ -19,12 +19,12 @@ accelRawY = []
 accelRawZ = []
 
 for j in range(100):
-    accelRawX.append(time[j] * 0.01)
-    accelRawY.append(time[j] * 0.05)
-    accelRawZ.append(time[j] * 0.10)
-    accelRawX[j] += 0.001 * (np.random.uniform(1, 8))
-    accelRawY[j] += 0.001 * (np.random.uniform(1, 8))
-    accelRawZ[j] += 0.001 * (np.random.uniform(1, 8))
+    accelRawX.append(time[j] * 1)
+    accelRawY.append(time[j] * 2)
+    accelRawZ.append(time[j] * 3)
+    accelRawX[j] += 0.001 * (np.random.uniform(1, 5))
+    accelRawY[j] += 0.001 * (np.random.uniform(1, 5))
+    accelRawZ[j] += 0.001 * (np.random.uniform(1, 5))
 
 
 for k in range(100):
@@ -36,8 +36,8 @@ for k in range(100):
 
 print(JSONArray)
 accelArray = SVR.SVR_process_monotype(JSONArray)
-NAV.calcLinearVelocity(accelArray)
-NAV.calcLinearDisplacement(accelArray)
+NAV.calcLinearVelocityAlt(accelArray)
+NAV.calcLinearDisplacementAlt(accelArray)
 
 stop = timeit.default_timer()
 
