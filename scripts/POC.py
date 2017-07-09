@@ -38,8 +38,8 @@ for k in range(100):
 
 print(JSONArray)
 accelArray = SVR.SVR_process_monotype(JSONArray)
-NAV.calcLinearVelocityAlt(accelArray)
-NAV.calcLinearDisplacementAlt(accelArray)
+NAV.calcLinearVelocity(accelArray)
+NAV.calcLinearDisplacement(accelArray)
 
 timeOpt = []
 count = 100

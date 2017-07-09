@@ -1,10 +1,7 @@
 # Script for navigation system with functions for position calculations
 # Written by Rosie Zou, June 2017
 
-import SVR as SVR
-import math
-import numpy as np
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import sys
 
 ## All functions take inputs in the following format:
@@ -16,7 +13,7 @@ import sys
 #     keys: x, y, z, time
 #     values: arrays of time-series values
 
-def calcLinearVelocityAlt(ACCELArray):
+def calcLinearVelocity(ACCELArray):
     DataType = ACCELArray[0]["sensor"]
     returnArray = {}
     if DataType != "accelerometer":
@@ -49,18 +46,18 @@ def calcLinearVelocityAlt(ACCELArray):
         returnArray["xVelocity"] = xVel
         returnArray["yVelocity"] = yVel
         returnArray["zVelocity"] = zVel
-        # plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
-        # plt.show()
+        plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
+        plt.show()
         print(returnArray)
         sys.stdout.flush()
 
-def calcLinearDisplacementAlt(ACCELArray):
+def calcLinearDisplacement(ACCELArray):
     DataType = ACCELArray[0]["sensor"]
     returnArray = {}
     if DataType != "accelerometer":
         return "Accelerometer readings required"
     else:
-        velocity = calcLinearVelocityAlt(ACCELArray)
+        velocity = calcLinearVelocity(ACCELArray)
         size = len(ACCELArray)
         xVel = velocity["xVelocity"]
         yVel = velocity["yVelocity"]
@@ -83,8 +80,8 @@ def calcLinearDisplacementAlt(ACCELArray):
         returnArray["xDisplacement"] = xDisp
         returnArray["yDisplacement"] = yDisp
         returnArray["zDisplacement"] = zDisp
-        # plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
-        # plt.show()
+        plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
+        plt.show()
         print(returnArray)
         sys.stdout.flush()
 
@@ -100,9 +97,9 @@ def outputRowPitchYaw(GYROArray):
         yaw = []
         time = []
         for count in range(size):
-            row.append((float)(GYROArray[count]["data"][0]/180))
-            pitch.append((float)(GYROArray[count]["data"][1] / 180))
-            yaw.append((float)(GYROArray[count]["data"][2] / 180))
+            row.append((float)(GYROArray[count]["data"][3]/180))
+            pitch.append((float)(GYROArray[count]["data"][4] / 180))
+            yaw.append((float)(GYROArray[count]["data"][5] / 180))
             time.append((float)(GYROArray[count]["time"]))
         returnArray["time"] = time
         returnArray["row"] = row
@@ -111,44 +108,25 @@ def outputRowPitchYaw(GYROArray):
         print(returnArray)
         sys.stdout.flush()
 
-def calcAngularVelocity(ACCELArray, GYROArray):
-    ## 3 feet tall, 2 feet wide (approximately)
-    linVelocity = calcLinearVelocity(ACCELArray)
-    rotation = outputRowPitchYaw(GYROArray)
-    height = 0.4572
-    width = 0.3048
-    xVel = linVelocity["xVelocity"]
-    yVel = linVelocity["yVelocity"]
-    zVel = linVelocity["zVelocity"]
-    xRot = rotation["row"]
-    yRot = rotation["pitch"]
-    zRot = rotation["yaw"]
+def calcAngularVelocity(GYROArray):
     xAng = []
     yAng = []
     zAng = []
-    xAng.append(0)
-    yAng.append(0)
-    zAng.append(0)
-    count = 1
-    size = len(xVel)
+    time = []
     returnArray = {}
-
-    while count < size:
-        xRad = (height * width) / math.sqrt(
-            width * width * math.sin(xRot[count]) + height * height * math.sin(xRot[count]))
-        yRad = (height * width) / math.sqrt(
-            width * width * math.sin(yRot[count]) + height * height * math.sin(yRot[count]))
-        zRad = (height * width) / math.sqrt(
-            width * width * math.sin(zRot[count]) + height * height * math.sin(zRot[count]))
-        xAng.append(xVel[count]/xRad)
-        yAng.append(yVel[count]/yRad)
-        zAng.append(zVel[count]/zRad)
-        count += 1
-
-    returnArray["time"] = GYROArray["time"]
-    returnArray["xAngular"] = xAng
-    returnArray["yAngular"] = yAng
-    returnArray["zAngular"] = zAng
+    if GYROArray[0]["sensor"] != "gyro":
+        return "Gyroscope readings required"
+    else:
+        size = len(GYROArray)
+        for count in range(size):
+            xAng.append((float)(GYROArray[count]["data"][0] / 180))
+            yAng.append((float)(GYROArray[count]["data"][1] / 180))
+            zAng.append((float)(GYROArray[count]["data"][2] / 180))
+            time.append((float)(GYROArray[count]["time"]))
+        returnArray["time"] = time
+        returnArray["xAngular"] = xAng
+        returnArray["yAngular"] = yAng
+        returnArray["zAngular"] = zAng
     print(returnArray)
     sys.stdout.flush()
 
@@ -178,103 +156,10 @@ def Optical(OptJSON):
     returnArray["time"] = timeCumulative
     returnArray["displacement"] = displacement
     returnArray["velocity"] = velocity
-    # print("Displacement array is")
-    # print(displacementCumulative)
-    # print("Velocity array is")
-    # print(velocity)
-    # print("Time array is")
-    # print(timeCumulative)
-    # plt.plot(timeCumulative, displacementCumulative, 'r', timeCumulative, displacement, 'b')
-    # plt.show()
     print(returnArray)
     sys.stdout.flush()
-
-def calcLinearVelocity(ACCELArray):
-    DataType = ACCELArray[0]["sensor"]
-    returnArray = {}
-    if DataType != "accelerometer":
-        return "Accelerometer readings required"
-    else:
-        size = len(ACCELArray)
-        x = []
-        y = []
-        z = []
-        t = []
-        xVel = []
-        yVel = []
-        zVel = []
-        for count in range(size):
-            x.append(ACCELArray[count]["data"][0]*9.80665)
-            y.append(ACCELArray[count]["data"][1]*9.80665)
-            z.append(ACCELArray[count]["data"][2]*9.80665)
-            t.append(ACCELArray[count]["time"])
-
-        LowerBound = 0
-        UpperBound = LowerBound + 2
-        while UpperBound < size:
-            xVel.append(np.trapz(t[LowerBound:UpperBound], x[LowerBound:UpperBound]))
-            yVel.append(np.trapz(t[LowerBound:UpperBound], y[LowerBound:UpperBound]))
-            zVel.append(np.trapz(t[LowerBound:UpperBound], z[LowerBound:UpperBound]))
-            LowerBound += 1
-            UpperBound = LowerBound + 2
-        # print(len(xVel))
-        # plt.plot(t[2:], xVel, 'r', t[2:], yVel, 'b', t[2:], zVel, 'g', lw=2)
-        # plt.show()
-
-        returnArray["time"] = t
-        returnArray["xVelocity"] = xVel
-        returnArray["yVelocity"] = yVel
-        returnArray["zVelocity"] = zVel
-
-    print(returnArray)
-    return returnArray
 
 #
 # longitude acceleration +-2g
 # lateral acceleration +- 1g
 # vertical acceleration +- 1g
-#
-def calcLinearDisplacement(ACCELArray):
-    velocities = calcLinearVelocity(ACCELArray)
-    xVel = velocities["xVelocity"]
-    yVel = velocities["yVelocity"]
-    zVel = velocities["zVelocity"]
-    times = velocities["time"]
-    xDisp = []
-    yDisp = []
-    zDisp = []
-    retval = {}
-    size = len(xVel)
-    LowerBound = 0
-    UpperBound = LowerBound + 2
-    while UpperBound < size:
-        xDisp.append(np.trapz(times[LowerBound:UpperBound], xVel[LowerBound:UpperBound]))
-        yDisp.append(np.trapz(times[LowerBound:UpperBound], yVel[LowerBound:UpperBound]))
-        zDisp.append(np.trapz(times[LowerBound:UpperBound], zVel[LowerBound:UpperBound]))
-        LowerBound += 1
-        UpperBound = LowerBound + 2
-    # plt.plot(times[4:], xDisp, 'r', times[4:], yDisp, 'b', times[4:], zDisp, 'g', lw=2)
-    # plt.show()
-
-    retval["xDisplacement"] = xDisp
-    retval["yDisplacement"] = yDisp
-    retval["zDisplacement"] = zDisp
-    retval["times"] = times
-    return retval
-
-
-
-# DemoData = []
-# for i in range(50):
-#     i += 1
-#     DemoData.append({"time": i, "sensor": "accelerometer", "data": [np.random.uniform(0, i), np.random.chisquare(i), np.random.binomial(50, (float)(i/(i+1)))]})
-
-# # DemoData2 = []
-# # for i in range(50):
-# #     i += 1
-# #     DemoData.append({"time": i, "sensor": "gyro", "data": [np.random.uniform(0, i), np.random.chisquare(i), np.random.binomial(50, (float)(i/(i+1)))]})
-# #
-#
-# calcLinearVelocityAlt(SVR.SVR_process_monotype(DemoData))
-
-# calcAngularVelocity(SVR.SVR_process_monotype(DemoData), SVR.SVR_process_monotype(DemoData2))
