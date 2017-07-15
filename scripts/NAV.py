@@ -1,25 +1,91 @@
 # Script for navigation system with functions for position calculations
 # Written by Rosie Zou, June 2017
 
+import numpy as np
+from sklearn.svm import SVR
+import timeit
 import matplotlib.pyplot as plt
 import sys
+import json
 
-## All functions take inputs in the following format:
-#    [{"time":1009,"sensor":"gyro","data":[-1.54875,12.19750,11.36625]},
-#     {"time":1009,"sensor":"gyro","data":[-1.54875,12.19750,11.36625]},...]
-# (exactly the same format as the SVR.py output)
+start = timeit.default_timer()
 
-## All functions return dictionaries with 4 entries:
-#     keys: x, y, z, time
-#     values: arrays of time-series values
+
+def SVR_process_monotype(JSONArray):
+    DataType = JSONArray["allData"][0]["sensor"]
+    size = len(JSONArray["allData"])
+    x = []
+    y = []
+    z = []
+    t = []
+    for count in range(size):
+        x.append(JSONArray["allData"][count]["data"][0])
+        y.append(JSONArray["allData"][count]["data"][1])
+        z.append(JSONArray["allData"][count]["data"][2])
+        t.append([JSONArray["allData"][count]["time"]])
+
+    svr_rbf = SVR(kernel='rbf', C=1.45e2, gamma=0.2, verbose=False)
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+    x_rbf = svr_rbf.fit(t, x).predict(t)
+    y_rbf = svr_rbf.fit(t, y).predict(t)
+    z_rbf = svr_rbf.fit(t, z).predict(t)
+    returnJSONArray = {}
+    returnJSONArray["allData"] = []
+    count = 0
+    while count < size:
+        returnJSONArray["allData"].append({"time": t[count][0], "sensor": DataType, "data": [x_rbf[count], y_rbf[count], z_rbf[count]]})
+        count += 1
+    returnJSONObject = json.dumps(returnJSONArray)
+    print(returnJSONObject)
+    sys.stdout.flush()
+    return returnJSONObject
+
+
+def SVR_process_monotypeAlt(JSONArray):
+    DataType = JSONArray[0]["val"]["sensor"]
+    size = len(JSONArray)
+    x = []
+    y = []
+    z = []
+    t = []
+    for count in range(size):
+        x.append(JSONArray[count]['val']["data"][0])
+        y.append(JSONArray[count]['val']["data"][1])
+        z.append(JSONArray[count]['val']["data"][2])
+        t.append([JSONArray[count]['val']["time"]])
+
+    svr_rbf = SVR(kernel='rbf', C=0.2e2, gamma=0.2, verbose=False)
+    x = np.array(x)
+    y = np.array(y)
+    z = np.array(z)
+    x_rbf = svr_rbf.fit(t, x).predict(t)
+    y_rbf = svr_rbf.fit(t, y).predict(t)
+    z_rbf = svr_rbf.fit(t, z).predict(t)
+    returnJSONArray = {}
+    returnJSONArray["allData"] = []
+    count = 0
+    while count < size:
+        returnJSONArray["allData"].append({"time": t[count][0], "sensor": DataType, "data": [x_rbf[count], y_rbf[count], z_rbf[count]]})
+        count += 1
+
+    # red for x, blue for y and green for z
+    # plt.plot(t, x_rbf, 'r', t, y_rbf, 'b', t, z_rbf, 'g', t, x, 'r--', t, y, 'bs', t, z, 'g^', lw = 2)
+    # plt.show()
+    returnJSONObject = json.dumps(returnJSONArray)
+    print(returnJSONObject)
+    sys.stdout.flush()
+    return returnJSONObject
 
 def calcLinearVelocity(ACCELArray):
-    DataType = ACCELArray[0]["sensor"]
+    DataType = ACCELArray["allData"][0]["sensor"]
     returnArray = {}
-    if DataType != "accelerometer":
+    if DataType != "accel":
         return "Accelerometer readings required"
     else:
-        size = len(ACCELArray)
+        size = len(ACCELArray["allData"])
+        print(size)
         x = []
         y = []
         z = []
@@ -28,10 +94,10 @@ def calcLinearVelocity(ACCELArray):
         yVel = []
         zVel = []
         for count in range(size):
-            x.append(ACCELArray[count]["data"][0]*9.80665)
-            y.append(ACCELArray[count]["data"][1]*9.80665)
-            z.append(ACCELArray[count]["data"][2]*9.80665)
-            t.append(ACCELArray[count]["time"])
+            x.append(ACCELArray["allData"][count]["data"][0]*9.80665)
+            y.append(ACCELArray["allData"][count]["data"][1]*9.80665)
+            z.append(ACCELArray["allData"][count]["data"][2]*9.80665)
+            t.append((float)(ACCELArray["allData"][count]["time"]/1000))
 
         xVel.append(0)
         yVel.append(0)
@@ -46,19 +112,23 @@ def calcLinearVelocity(ACCELArray):
         returnArray["xVelocity"] = xVel
         returnArray["yVelocity"] = yVel
         returnArray["zVelocity"] = zVel
-        plt.plot(t, xVel, 'r', t, yVel, 'b', t, zVel, 'g')
+        plt.plot(t[:300], zVel[:300], 'g')
+        plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
+        plt.xlabel('time in s')
+        plt.ylabel('velocity in m/s')
         plt.show()
         print(returnArray)
         sys.stdout.flush()
+        return returnArray
 
 def calcLinearDisplacement(ACCELArray):
-    DataType = ACCELArray[0]["sensor"]
+    DataType = ACCELArray["allData"][0]["sensor"]
     returnArray = {}
-    if DataType != "accelerometer":
+    if DataType != "accel":
         return "Accelerometer readings required"
     else:
         velocity = calcLinearVelocity(ACCELArray)
-        size = len(ACCELArray)
+        size = len(velocity["time"])
         xVel = velocity["xVelocity"]
         yVel = velocity["yVelocity"]
         zVel = velocity["zVelocity"]
@@ -80,27 +150,39 @@ def calcLinearDisplacement(ACCELArray):
         returnArray["xDisplacement"] = xDisp
         returnArray["yDisplacement"] = yDisp
         returnArray["zDisplacement"] = zDisp
-        plt.plot(time, xDisp, 'r--', time, yDisp, 'b^', time, zDisp, 'g-')
+        print(len(zDisp))
+        plt.plot(time[:300], zDisp[:300], 'g-')
+        plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
+        plt.xlabel('time in s')
+        plt.ylabel('displacement in m')
         plt.show()
         print(returnArray)
         sys.stdout.flush()
+        return returnArray
 
-def outputRowPitchYaw(GYROArray):
-    DataType = GYROArray[0]["sensor"]
+def outputRowPitchYaw(ACCELArray, MAGArray):
+    DataType = ACCELArray["allData"][0]["sensor"]
     returnArray = {}
-    if DataType != "gyro":
-        return "Gyroscope readings required"
+    if DataType != "accel":
+        return "Accelerometer readings required"
+    elif MAGArray["allData"][0]["sensor"] != "mag":
+        return "Magnetometer readings required"
     else:
-        size = len(GYROArray)
+        size = len(ACCELArray)
         row = []
         pitch = []
         yaw = []
         time = []
         for count in range(size):
-            row.append((float)(GYROArray[count]["data"][3]/180))
-            pitch.append((float)(GYROArray[count]["data"][4] / 180))
-            yaw.append((float)(GYROArray[count]["data"][5] / 180))
-            time.append((float)(GYROArray[count]["time"]))
+            r = (float)(ACCELArray[count]["data"][3]/180)
+            p = (float)(ACCELArray[count]["data"][4]/180)
+            xm = MAGArray[count]["data"][0]
+            ym = MAGArray[count]["data"][1]
+            zm = MAGArray[count]["data"][2]
+            row.append(r)
+            pitch.append(p)
+            yaw.append(calcYaw(r, p, xm, ym, zm))
+            time.append((float)(ACCELArray[count]["time"]))
         returnArray["time"] = time
         returnArray["row"] = row
         returnArray["pitch"] = pitch
@@ -131,6 +213,13 @@ def calcAngularVelocity(GYROArray):
     sys.stdout.flush()
 
 
+# yaw = atan2( (-ymag*cos(Roll) + zmag*sin(Roll) ) , (xmag*cos(Pitch) + ymag*sin(Pitch)*sin(Roll)+ zmag*sin(Pitch)*cos(Roll)) )
+def calcYaw(roll, pitch, xmag, ymag, zmag):
+    arg1 = -1 * ymag * np.cos(roll) + zmag * np.sin(roll)
+    arg2 = xmag * np.cos(pitch) + ymag * np.sin(pitch) * np.sin*(roll) + zmag * np.sin(pitch) * np.cos(roll)
+    return np.arctan2(arg1, arg2)
+
+
 def Optical(OptJSON):
     data = OptJSON["allData"]
     time = []
@@ -159,7 +248,11 @@ def Optical(OptJSON):
     print(returnArray)
     sys.stdout.flush()
 
-#
+
+stop = timeit.default_timer()
+
+print(stop - start)
+
 # longitude acceleration +-2g
 # lateral acceleration +- 1g
 # vertical acceleration +- 1g
