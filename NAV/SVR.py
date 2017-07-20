@@ -11,8 +11,6 @@ import matplotlib.pyplot as plt
 import sys
 import json
 
-start = timeit.default_timer()
-
 
 def SVR_process_monotype(JSONArray):
     DataType = JSONArray["allData"][0]["sensor"]
@@ -45,8 +43,8 @@ def SVR_process_monotype(JSONArray):
     # plt.plot(t, x_rbf, 'r', t, y_rbf, 'b', t, z_rbf, 'g', t, x, 'r--', t, y, 'bs', t, z, 'g^', lw = 2)
     # plt.show()
     returnJSONObject = json.dumps(returnJSONArray)
-    print(returnJSONObject)
-    sys.stdout.flush()
+    # print(returnJSONObject)
+    # sys.stdout.flush()
     return returnJSONObject
 
 
@@ -81,13 +79,10 @@ def SVR_process_monotypeAlt(JSONArray):
     # plt.plot(t, x_rbf, 'r', t, y_rbf, 'b', t, z_rbf, 'g', t, x, 'r--', t, y, 'bs', t, z, 'g^', lw = 2)
     # plt.show()
     returnJSONObject = json.dumps(returnJSONArray)
-    print(returnJSONObject)
-    sys.stdout.flush()
+    # print(returnJSONObject)
+    # sys.stdout.flush()
     return returnJSONObject
 
-stop = timeit.default_timer()
-
-print(stop - start)
 
 
 # DEMO

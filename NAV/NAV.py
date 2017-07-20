@@ -112,11 +112,11 @@ def calcLinearVelocity(ACCELArray):
         returnArray["xVelocity"] = xVel
         returnArray["yVelocity"] = yVel
         returnArray["zVelocity"] = zVel
-        plt.plot(t[:300], zVel[:300], 'g')
-        plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
-        plt.xlabel('time in s')
-        plt.ylabel('velocity in m/s')
-        plt.show()
+        # plt.plot(t[:300], zVel[:300], 'g')
+        # plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
+        # plt.xlabel('time in s')
+        # plt.ylabel('velocity in m/s')
+        # plt.show()
         print(returnArray)
         sys.stdout.flush()
         return returnArray
@@ -150,14 +150,14 @@ def calcLinearDisplacement(ACCELArray):
         returnArray["xDisplacement"] = xDisp
         returnArray["yDisplacement"] = yDisp
         returnArray["zDisplacement"] = zDisp
-        print(len(zDisp))
-        plt.plot(time[:300], zDisp[:300], 'g-')
-        plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
-        plt.xlabel('time in s')
-        plt.ylabel('displacement in m')
-        plt.show()
-        print(returnArray)
-        sys.stdout.flush()
+        # print(len(zDisp))
+        # plt.plot(time[:300], zDisp[:300], 'g-')
+        # plt.suptitle('selected visualization of vertical vibration', fontsize=12, fontweight='bold')
+        # plt.xlabel('time in s')
+        # plt.ylabel('displacement in m')
+        # plt.show()
+        # print(returnArray)
+        # sys.stdout.flush()
         return returnArray
 
 def outputRowPitchYaw(ACCELArray, MAGArray):
@@ -250,6 +250,21 @@ def Optical(OptJSON):
 
 
 stop = timeit.default_timer()
+#
+# class SimpleEcho(WebSocket):
+#
+#     def handleMessage(self):
+#         # echo message back to client
+#         self.sendMessage(self.data)
+#
+#     def handleConnected(self):
+#         print(self.address, 'connected')
+#
+#     def handleClose(self):
+#         print(self.address, 'closed')
+#
+# server = SimpleWebSocketServer('', 8000, SimpleEcho)
+# server.serveforever()
 
 print(stop - start)
 
