@@ -201,18 +201,22 @@ if __name__ == '__main__':
     prevStats = [0.0, 0.0, 0.0]
     counter = 1
     while True:
-        jsonarray = json.loads(data)
-        if jsonarray[0]["sensor"] != "Color":
-            jsonarray = SVR_process_monotype(jsonarray)
+        if data == 'break':
+            break
+            exit(0)
+        else:
+            jsonarray = json.loads(data)
+            if jsonarray[0]["sensor"] != "Color":
+                jsonarray = SVR_process_monotype(jsonarray)
 
-            if (jsonarray[0]["sensor"] == 'gyro'):
-                calcAngularVelocity(jsonarray)
+                if (jsonarray[0]["sensor"] == 'gyro'):
+                    calcAngularVelocity(jsonarray)
 
-            if (jsonarray[0]["sensor"] == 'accel'):
-                calcLinearVelocity(jsonarray)
-                initDisp = calcLinearDisplacement(jsonarray, initDisp)
+                if (jsonarray[0]["sensor"] == 'accel'):
+                    calcLinearVelocity(jsonarray)
+                    initDisp = calcLinearDisplacement(jsonarray, initDisp)
 
-        if jsonarray["sensor"] == "Color":
-            prevStats, counter = Optical(jsonarray, prevStats, counter)
+            if jsonarray["sensor"] == "Color":
+                prevStats, counter = Optical(jsonarray, prevStats, counter)
 
-        data = input()
+            data = input()
