@@ -195,28 +195,24 @@ def Optical(OptJSON, prevStats, counter):
     return prevStats, counter
 
 
-
-# longitude acceleration +-2g
-# lateral acceleration +- 1g
-# vertical acceleration +- 1g
-
-data = input()
-initDisp = [0.0, 0.0, 0.0]
-prevStats = [0.0, 0.0, 0.0]
-counter = 1
-while True:
-    jsonarray = json.loads(data)
-    if jsonarray["sensor"] != "Color":
-        jsonarray = SVR_process_monotype(jsonarray)
-
-        if (jsonarray[0]["sensor"] == 'gyrp'):
-            calcAngularVelocity(jsonarray)
-
-        if (jsonarray[0]["sensor"] == 'accel'):
-            calcLinearVelocity(jsonarray)
-            initDisp = calcLinearDisplacement(jsonarray, initDisp)
-
-    if jsonarray["sensor"] == "Color":
-        prevStats, counter = Optical(jsonarray, prevStats, counter)
-
+if __name__ == '__main__':
     data = input()
+    initDisp = [0.0, 0.0, 0.0]
+    prevStats = [0.0, 0.0, 0.0]
+    counter = 1
+    while True:
+        jsonarray = json.loads(data)
+        if jsonarray[0]["sensor"] != "Color":
+            jsonarray = SVR_process_monotype(jsonarray)
+
+            if (jsonarray[0]["sensor"] == 'gyro'):
+                calcAngularVelocity(jsonarray)
+
+            if (jsonarray[0]["sensor"] == 'accel'):
+                calcLinearVelocity(jsonarray)
+                initDisp = calcLinearDisplacement(jsonarray, initDisp)
+
+        if jsonarray["sensor"] == "Color":
+            prevStats, counter = Optical(jsonarray, prevStats, counter)
+
+        data = input()
