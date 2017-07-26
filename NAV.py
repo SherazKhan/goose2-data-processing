@@ -43,6 +43,17 @@ def SVR_process_monotype(JSONArray):
     except(Exception):
         print(JSONArray)
 
+def calcLateralForce(ACCELArray):
+    data = SVR_process_monotype(ACCELArray)
+    data = list(map(lambda x: x["data"][0] * 140, data))
+    data = list(map(lambda x: x["data"][1] * 140, data))
+    data = list(map(lambda x: x["data"][2] * 140, data))
+    for i in range(len(data)):
+        data[i]["sensor"] = "latf"
+    print(data)
+    return data
+
+
 def calcLinearVelocity(ACCELArray):
     data = SVR_process_monotype(ACCELArray)
     DataType = data[0]["sensor"]
@@ -213,6 +224,7 @@ if __name__ == '__main__':
                     calcAngularVelocity(jsonarray)
 
                 if (jsonarray[0]["sensor"] == 'accel'):
+                    calcLateralForce(jsonarray)
                     calcLinearVelocity(jsonarray)
                     initDisp = calcLinearDisplacement(jsonarray, initDisp)
 
