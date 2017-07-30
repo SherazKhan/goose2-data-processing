@@ -45,9 +45,9 @@ def SVR_process_monotype(JSONArray):
 
 def calcLateralForce(ACCELArray):
     data = SVR_process_monotype(ACCELArray)
-    data = list(map(lambda x: x["data"][0] * 140, data))
-    data = list(map(lambda x: x["data"][1] * 140, data))
-    data = list(map(lambda x: x["data"][2] * 140, data))
+    data = map(lambda x: x["data"][0] * 140, data)
+    data = map(lambda x: x["data"][1] * 140, data)
+    data = map(lambda x: x["data"][2] * 140, data)
     for i in range(len(data)):
         data[i]["sensor"] = "latf"
     print(data)
@@ -106,11 +106,11 @@ def calcLinearDisplacement(ACCELArray, prevDisp):
     else:
         velocity = calcLinearVelocity(ACCELArray)
         size = len(velocity)
-        xVel = list(map(lambda x: x["data"][0], velocity))
-        yVel = list(map(lambda x: x["data"][1], velocity))
-        zVel = list(map(lambda x: x["data"][2], velocity))
-        time = list(map(lambda x: x["time"], velocity))
-        heartbeat = list(map(lambda x: x["data"][3], velocity))
+        xVel = map(lambda x: x["data"][0], velocity)
+        yVel = map(lambda x: x["data"][1], velocity)
+        zVel = map(lambda x: x["data"][2], velocity)
+        time = map(lambda x: x["time"], velocity)
+        heartbeat = map(lambda x: x["data"][3], velocity)
         xDisp = []
         yDisp = []
         zDisp = []
